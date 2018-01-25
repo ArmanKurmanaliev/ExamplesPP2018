@@ -9,7 +9,8 @@ namespace W3G2_Example4
 {
     class Program
     {
-        static void ShowDirectoryInfo(DirectoryInfo directory, int cursor)
+        static int CONSOLE_SIZE = 20;
+        static void ShowDirectoryInfo(DirectoryInfo directory, int cursor, int first)
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();
@@ -32,7 +33,8 @@ namespace W3G2_Example4
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.BackgroundColor = ConsoleColor.Blue;
                 }
-                Console.WriteLine(f.Name);
+                if (index >= first && index <= first + CONSOLE_SIZE)
+                    Console.WriteLine(f.Name);
                 index++;
             }
         }
@@ -40,8 +42,9 @@ namespace W3G2_Example4
         static void Main(string[] args)
         {
             DirectoryInfo directory = new DirectoryInfo(@"C:\Users\a.akshabaev\Desktop\Examples");
+            int first = 0;
             int cursor = 0;
-            ShowDirectoryInfo(directory, cursor);
+            ShowDirectoryInfo(directory, cursor, first);
             int n = directory.GetFileSystemInfos().Length;
             while (true)
             {
@@ -50,15 +53,62 @@ namespace W3G2_Example4
                 {
                     cursor--;
                     if (cursor < 0)
+                    {
                         cursor = n - 1;
+                        first = cursor - CONSOLE_SIZE;
+                    }
+                    if (cursor < first)
+                    {
+                        first--;
+                    }
                 }
                 if (keyInfo.Key == ConsoleKey.DownArrow)
                 {
                     cursor++;
                     if (cursor == n)
+                    {
                         cursor = 0;
+                        first = 0;
+                    }
+                    if (cursor > first + CONSOLE_SIZE)
+                    {
+                        first++;
+                    }
                 }
-                ShowDirectoryInfo(directory, cursor);
+                if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    if (directory.GetFileSystemInfos()[cursor].GetType() == typeof(DirectoryInfo))
+                    {
+                        directory = (DirectoryInfo) directory.GetFileSystemInfos()[cursor];
+                        cursor = 0;
+                        n = directory.GetFileSystemInfos().Length;
+                        first = 0;
+                    }
+                    else
+                    {
+                        StreamReader sr = new StreamReader(directory.GetFileSystemInfos()[cursor].FullName);
+                        string s = sr.ReadToEnd();
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Clear();
+                        Console.WriteLine(s);
+                        Console.ReadKey();
+                    }
+
+                }
+                if (keyInfo.Key == ConsoleKey.Escape)
+                {
+                    if (directory.Parent != null)
+                    {
+                        directory = directory.Parent;
+                        cursor = 0;
+                        n = directory.GetFileSystemInfos().Length;
+                        first = 0;
+                    }
+                    else
+                        break;
+                }
+                ShowDirectoryInfo(directory, cursor, first);
             }
         }
     }
