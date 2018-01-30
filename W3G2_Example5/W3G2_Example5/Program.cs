@@ -14,27 +14,28 @@ namespace W3G2_Example5
             int y = 0;
             while (true)
             {
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
-                if (keyInfo.Key == ConsoleKey.UpArrow)
-                    y--;
-                if (keyInfo.Key == ConsoleKey.DownArrow)
-                    y++;
-                if (keyInfo.Key == ConsoleKey.LeftArrow)
-                    x--;
-                if (keyInfo.Key == ConsoleKey.RightArrow)
-                    x++;
-                Console.Clear();
-                Console.CursorVisible = false;
                 try
                 {
-                    Console.SetCursorPosition(x, y);
+                    ConsoleKeyInfo keyInfo = Console.ReadKey();
+                    if (keyInfo.Key == ConsoleKey.UpArrow)
+                        y--;
+                    if (keyInfo.Key == ConsoleKey.DownArrow)
+                        y++;
+                    if (keyInfo.Key == ConsoleKey.LeftArrow)
+                        x--;
+                    if (keyInfo.Key == ConsoleKey.RightArrow)
+                        x++;
+                    Console.Clear();
+                    Console.CursorVisible = false;
+
+                    Console.WriteLine("*");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("ERROR!!!");
                     Console.ReadKey();
                 }
-                Console.WriteLine("*");
+
             }
         }
     }
