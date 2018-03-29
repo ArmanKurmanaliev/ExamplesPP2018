@@ -41,7 +41,6 @@ namespace GraphicsExample_Paint
         {
             if (tool == 1)
             {
-                //e.Graphics.Clear(Color.White);
                 e.Graphics.DrawRectangle(new Pen(Color.Blue), prev.X, prev.Y, cur.X - prev.X, cur.Y - prev.Y);
             }
         }
@@ -58,7 +57,7 @@ namespace GraphicsExample_Paint
             if (tool == 1)
             {
                 bmpGraphics.DrawRectangle(new Pen(Color.Red), prev.X, prev.Y, cur.X - prev.X, cur.Y - prev.Y);
-                pictureBox1.Refresh();
+                //pictureBox1.Refresh();
             }
         }
 
@@ -72,8 +71,13 @@ namespace GraphicsExample_Paint
                     bmpGraphics.DrawLine(new Pen(Color.Black), prev.X, prev.Y, cur.X, cur.Y);
                     prev = cur;
                 }
-                pictureBox1.Refresh();
+                //pictureBox1.Refresh();
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Refresh();
         }
 
     }
