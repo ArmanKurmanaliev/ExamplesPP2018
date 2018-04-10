@@ -5,49 +5,52 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GrahpicsFill
+namespace GraphicsFillV2
 {
     public partial class Form1 : Form
     {
-
-
-        bool clicked = false;
-        Point prev, cur;
+        Queue<Point> q = new Queue<Point>();
         Bitmap bmp;
+        Color fillColor, initColor;
         Graphics g;
+        bool clicked;
+        Point prev, cur;
+
         enum Tool
         {
             PEN,
             FILL
-        };
+        }
+
         Tool tool = Tool.PEN;
-        Queue<Point> q = new Queue<Point>();
-        Color init_color;
-        Color fill_color;
-        
+
         public Form1()
         {
             InitializeComponent();
+            bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            fillColor = Color.Red;
+            g = Graphics.FromImage(bmp);
+            g.Clear(Color.White);
+            pictureBox1.Image = bmp;
+            clicked = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            pictureBox1.Image = bmp;
-            g = Graphics.FromImage(bmp);
-            fill_color = Color.Red;
+
         }
 
-        public void check(int x, int y)
-        {
-            if (x < 0 || x > bmp.Width || y < 0 || y > bmp.Height)
+        public void Check(int x, int y) {
+            if (x < 0 || y < 0 || x >= pictureBox1.Width || y >= pictureBox1.Height)
                 return;
-            if (bmp.GetPixel(x, y) == init_color)
+
+            if (bmp.GetPixel(x, y) == initColor)
             {
-                bmp.SetPixel(x, y, fill_color);
+                bmp.SetPixel(x, y, fillColor);
                 q.Enqueue(new Point(x, y));
             }
         }
@@ -58,26 +61,22 @@ namespace GrahpicsFill
             prev = e.Location;
             if (tool == Tool.FILL)
             {
-                int x = e.X;
-                int y = e.Y;
-                init_color = bmp.GetPixel(x, y);
-                q.Enqueue(new Point(x, y));
-                bmp.SetPixel(x, y, fill_color);
-                while (q.Count != 0)
-                {
-                    Point p = q.Dequeue();
-                    check(p.X - 1, p.Y);
-                    check(p.X + 1, p.Y);
-                    check(p.X, p.Y - 1);
-                    check(p.X, p.Y + 1);
-                }
-                pictureBox1.Refresh();
-            }
-        }
+                initColor = bmp.GetPixel(e.X, e.Y);
+                q.Enqueue(new Point(e.X, e.Y));
+                bmp.SetPixel(e.X, e.Y, fillColor);
 
-        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-        {
-            clicked = false;
+                while (q.Count > 0)
+                {
+                    Point cur = q.Dequeue();
+                    Check(cur.X + 1, cur.Y);
+                    Check(cur.X - 1, cur.Y);
+                    Check(cur.X, cur.Y + 1);
+                    Check(cur.X, cur.Y - 1);
+                    pictureBox1.Refresh();
+                    Thread.Sleep(1);
+                }
+                
+            }
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -86,9 +85,14 @@ namespace GrahpicsFill
             if (clicked && tool == Tool.PEN)
             {
                 g.DrawLine(new Pen(Color.Black), prev.X, prev.Y, cur.X, cur.Y);
-                prev = cur;
                 pictureBox1.Refresh();
+                prev = cur;
             }
+        }
+
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+            clicked = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -101,9 +105,6 @@ namespace GrahpicsFill
             tool = Tool.FILL;
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            g.DrawImage()
-        }
+
     }
 }
